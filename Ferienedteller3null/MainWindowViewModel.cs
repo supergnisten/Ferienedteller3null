@@ -1,58 +1,71 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.DirectoryServices.AccountManagement;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media;
 using System.Windows.Threading;
 using Ferienedteller3null.Properties;
-
-using Color = System.Drawing.Color;
 
 namespace Ferienedteller3null
 {
 
     public class MainWindowViewModel : ViewModelBase
     {
-        readonly DateTime _chirstmasRings = new DateTime(2015,12,24,16,0,0);
-        private DispatcherTimer _timer; 
+        readonly DateTime _chirstmasRings = new DateTime(2015, 12, 24, 16, 0, 0);
+        private DispatcherTimer _timer;
         public MainWindowViewModel()
         {
-            SelectedDate = Settings.Default.SelectedVacationData;
+
+            ThemeSources = new ObservableCollection<string> { "Standard", "Lofoten", "StarWars - DarkSide", "StarWars - Christmas" };
+            SelectedImageSource = Settings.Default.SelectedTheme;
+            UpdateStringsAndDates();
             UserName = Settings.Default.UserName;
             var newUsername = string.Empty;
-            if (UserName.Equals("Hei, Julenisse!"))
-                newUsername = UserPrincipal.Current.DisplayName;
-            if (!string.IsNullOrEmpty(newUsername))
-                UserName = newUsername;
+            try
+            {
+                if (UserName.Equals("Hei, Julenisse!"))
+                    newUsername = UserPrincipal.Current.DisplayName;
+                if (!string.IsNullOrEmpty(newUsername))
+                    UserName = newUsername;
+            }
+            catch (Exception e)
+            {
+
+            }
+
 
             UseShortTextTimeString = Settings.Default.UseShortStrings;
-            SelectedVacationHour = Settings.Default.SelectedVacationData;
 
             StartTimer();
             PropertyChanged += OnPropertyChanged;
-            ClosingRequest += OnClosingRequest;
+
         }
 
-        private void OnClosingRequest(object sender, EventArgs eventArgs)
+       private void UpdateStringsAndDates()
         {
-        _timer?.Stop();
+            FirstString = SelectedImageSource.Contains("StarWars") ? Resources.StarWars_MyDate : Resources.Christmas_Vacation;
+            SecondString = SelectedImageSource.Contains("StarWars") ? Resources.StarWars_Premiere : Resources.Chrismas_ChristmasRingin;
+            LastString = SelectedImageSource.Contains("StarWars") ? Resources.StarWars_mayTheForceBeWithYou : Resources.Christmas_MerryChristmas;
+
+            SelectedDate = SelectedImageSource.Contains("StarWars") ? Settings.Default.StarWarsMyDate : Settings.Default.SelectedVacationData;
+            SelectedVacationHour = SelectedImageSource.Contains("StarWars") ? Settings.Default.StarWarsMyHour : Settings.Default.SelectedVacationData;
+
         }
+
+        
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             if (propertyChangedEventArgs.PropertyName.Equals(nameof(SelectedVacationHour)))
             {
-                SelectedDate = new DateTime(SelectedDate.Year,SelectedDate.Month,SelectedDate.Day,
-                    SelectedVacationHour.Hour,SelectedVacationHour.Minute,SelectedVacationHour.Second);
+                SelectedDate = new DateTime(SelectedDate.Year, SelectedDate.Month, SelectedDate.Day,
+                    SelectedVacationHour.Hour, SelectedVacationHour.Minute, SelectedVacationHour.Second);
+            }
+
+
+            if (propertyChangedEventArgs.PropertyName.Equals(nameof(SelectedImageSource)))
+            {
+
+                UpdateStringsAndDates();
             }
 
             Settings.Default.Save();
@@ -92,6 +105,44 @@ namespace Ferienedteller3null
             }
         }
 
+        private string _firstString;
+
+        public string FirstString
+        {
+            get { return _firstString; }
+            set
+            {
+                _firstString = value;
+                OnPropertyChanged(nameof(FirstString));
+            }
+        }
+
+        private string _secondString;
+
+        public string SecondString
+        {
+            get { return _secondString; }
+            set
+            {
+                _secondString = value;
+                OnPropertyChanged(nameof(SecondString));
+            }
+        }
+
+        private string _lastSTring;
+
+        public string LastString
+        {
+            get { return _lastSTring; }
+            set
+            {
+                _lastSTring = value;
+                OnPropertyChanged(nameof(LastString));
+            }
+        }
+
+
+
         private DateTime _selectedDate;
         public DateTime SelectedDate
         {
@@ -99,28 +150,33 @@ namespace Ferienedteller3null
             set
             {
                 _selectedDate = value;
-                Settings.Default.SelectedVacationData = value;
-                Settings.Default.Save();
+                if (SelectedImageSource.Contains("StarWars"))
+                    Settings.Default.StarWarsMyDate = value;
+                else
+                    Settings.Default.SelectedVacationData = value;
+
+
                 OnPropertyChanged(nameof(SelectedDate));
             }
         }
 
 
-        private ImageSource _selectedImageSource;
+        private string _selectedImageSource;
 
-        public ImageSource SelectedImageSources
+        public string SelectedImageSource
         {
             get { return _selectedImageSource; }
             set
             {
                 _selectedImageSource = value;
-                OnPropertyChanged(nameof(SelectedImageSources));
+                Settings.Default.SelectedTheme = value;
+                OnPropertyChanged(nameof(SelectedImageSource));
             }
         }
 
-        private ObservableCollection<ImageSourceStore> _themeSources;
+        private ObservableCollection<string> _themeSources;
 
-        public ObservableCollection<ImageSourceStore> ThemeSources
+        public ObservableCollection<string> ThemeSources
         {
             get { return _themeSources; }
             set
@@ -143,7 +199,7 @@ namespace Ferienedteller3null
                 OnPropertyChanged(nameof(UseShortTextTimeString));
             }
         }
- 
+
         private DateTime _selectedHours;
 
         public DateTime SelectedVacationHour
@@ -152,6 +208,10 @@ namespace Ferienedteller3null
             set
             {
                 _selectedHours = value;
+                if (SelectedImageSource.Contains("StarWars"))
+                    Settings.Default.StarWarsMyHour = value;
+                else
+                    Settings.Default.selectedVacationHour = value;
                 OnPropertyChanged(nameof(SelectedVacationHour));
             }
         }
@@ -168,7 +228,20 @@ namespace Ferienedteller3null
                 OnPropertyChanged(nameof(AlwaysOnTop));
             }
         }
- 
+
+
+        private bool _useStarWarsCountDown;
+
+        public bool StarWarsCountDown
+        {
+            get { return _useStarWarsCountDown; }
+            set
+            {
+                _useStarWarsCountDown = value;
+                Settings.Default.StarWarsCountDown = value;
+                OnPropertyChanged(nameof(StarWarsCountDown));
+            }
+        }
 
         private void StartTimer()
         {
@@ -178,7 +251,7 @@ namespace Ferienedteller3null
         }
         private void TimerOnTick(object sender, EventArgs eventArgs)
         {
-            
+
             var deltaVacation = SelectedDate - DateTime.Now;
             var days = deltaVacation.Days;
             var hours = deltaVacation.Hours;

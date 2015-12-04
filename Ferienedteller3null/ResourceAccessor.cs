@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using System.Windows.Media;
 
 namespace Ferienedteller3null
@@ -21,6 +16,6 @@ namespace Ferienedteller3null
     public class ImageSourceStore
     {
         public string Name { get; set; }
-        public ImageSource ImageSource { get; set; }
+        public string ImageSource { get; set; }
     }
 }

@@ -3,28 +3,77 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Ferienedteller3null" 
         mc:Ignorable="d"
-        Title="Ferienedteller" DataContext="{StaticResource MainViewModel}" Height="600" Width="1000"  Icon="Images/nedtelling_ikon.ico" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" Topmost="{Binding AlwaysOnTop}">
-    <Window.Background>
-        <ImageBrush ImageSource="Images/SnowyChristmas.jpg"/>
-    </Window.Background>
+        Title="Ferienedteller" DataContext="{StaticResource MainViewModel}"  Height="600" Width="1000"  
+        Icon="Images/nedtelling_ikon.ico" WindowStartupLocation="CenterScreen" 
+        SizeToContent="WidthAndHeight" Topmost="{Binding AlwaysOnTop}">
+    <Window.Resources>
+        <Style TargetType="DockPanel">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <ImageBrush ImageSource="Images/SnowyChristmas.jpg"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedImageSource}" Value="Lofoten">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <ImageBrush ImageSource="Images/Lofoten.jpg"/>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SelectedImageSource}" Value="StarWars - DarkSide">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <ImageBrush ImageSource="Images/StarWarsDarkside.jpg"/>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SelectedImageSource}" Value="StarWars - Christmas">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <ImageBrush ImageSource="Images/StarWarsChrismas.jpg"/>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
 
+        </Style>
+        <Style TargetType="Label">
+            <Setter  Property="Foreground" Value="Red"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedImageSource}" Value="StarWars - DarkSide">
+                    <Setter Property="Foreground" Value="Gold"/>
+                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                    <Setter Property="Margin" Value="0,0,0,20"/>
+
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SelectedImageSource}" Value="StarWars - Christmas">
+                    <Setter Property="Foreground" Value="Gold"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="Margin" Value="20,0,0,0"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <DockPanel>
-      
-        <Label Content="Juleferie om" FontSize="45" Foreground="Red"  DockPanel.Dock="Top" HorizontalAlignment="Center"/>
-        <Label Content="{Binding RestTimeToVacationString}" FontSize="65" Foreground="Red" DockPanel.Dock="Top" HorizontalAlignment="Center"/>
-        <Label Content="Julen ringes inn om" FontSize="45" Foreground="Red" DockPanel.Dock="Top" HorizontalAlignment="Center"/>
-        <Label Content="{Binding RestTimeToChristmasString}" FontSize="65" Foreground="Red" DockPanel.Dock="Top" HorizontalAlignment="Center"/>
-        <Label Content="God Jul" FontSize="45" HorizontalAlignment="Center" DockPanel.Dock="Top" Foreground="Red"/>
-        <Label Content="{Binding UserName}" Foreground="Red" FontSize="45" DockPanel.Dock="Top" HorizontalAlignment="Center"/>
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="25" VerticalAlignment="Bottom">
-            <Label Content="Feriedato" Foreground="Red" VerticalAlignment="Center"/>
+        <Label Content="{Binding FirstString}" FontSize="25" DockPanel.Dock="Top" />
+        <Label Content="{Binding RestTimeToVacationString}" FontSize="45" DockPanel.Dock="Top" />
+        <Label Content="{Binding SecondString}" FontSize="25"  DockPanel.Dock="Top" />
+        <Label Content="{Binding RestTimeToChristmasString}" FontSize="45"  DockPanel.Dock="Top" />
+        <Label Content="{Binding LastString}" FontSize="25" DockPanel.Dock="Top" />
+        <Label Content="{Binding UserName}"  FontSize="25" DockPanel.Dock="Top"/>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="35" 
+                    VerticalAlignment="Bottom" Background="{x:Null}"
+                     >
+            <Label Content="Feriedato"  VerticalAlignment="Center"/>
             <DatePicker SelectedDate="{Binding SelectedDate}" SelectedDateFormat="Short" FirstDayOfWeek="Monday" VerticalAlignment="Center"/>
             <TextBox Width="50" Margin="2" Text="{Binding SelectedVacationHour, StringFormat=HH:mm}" VerticalAlignment="Center"/>
-            <ComboBox Visibility="Hidden" ItemsSource="{Binding ThemeSources}" SelectedItem="{Binding SelectedImageSources}" DisplayMemberPath="Name" Width="125" Margin="5"/>
-            <CheckBox IsChecked="{Binding UseShortTextTimeString}" Content="Bruk kort tekst på tiden" Foreground="Red" VerticalAlignment="Center"/>
-            <CheckBox IsChecked="{Binding AlwaysOnTop}" Content="Vis alltid på topp" Foreground="Red" VerticalAlignment="Center" Margin="5,0,10,0"/>
+            <ComboBox ItemsSource="{Binding ThemeSources}" SelectedItem="{Binding SelectedImageSource}" Width="125" Margin="5"/>
+            <CheckBox IsChecked="{Binding UseShortTextTimeString}" Content="Bruk kort tekst på tiden" VerticalAlignment="Center"/>
+            <CheckBox IsChecked="{Binding AlwaysOnTop}" Content="Vis alltid på topp" VerticalAlignment="Center" Margin="5,0,10,0"/>
         </StackPanel>
     </DockPanel>
 </Window>

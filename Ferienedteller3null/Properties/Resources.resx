@@ -127,4 +127,28 @@
   <data name="SnowyChristmas" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\snowychristmas.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Chrismas_ChristmasRingin" xml:space="preserve">
+    <value>Julen ringes inn om</value>
+  </data>
+  <data name="Christmas_MerryChristmas" xml:space="preserve">
+    <value>God jul</value>
+  </data>
+  <data name="Christmas_Vacation" xml:space="preserve">
+    <value>Juleferie om</value>
+  </data>
+  <data name="StarWarsChrismas" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\starwarschrismas.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="StarWarsDarkside" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\starwarsdarkside.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="StarWars_mayTheForceBeWithYou" xml:space="preserve">
+    <value>May the force be with you</value>
+  </data>
+  <data name="StarWars_MyDate" xml:space="preserve">
+    <value>Dager til min forestilling av Star Wars</value>
+  </data>
+  <data name="StarWars_Premiere" xml:space="preserve">
+    <value>Dager til premieren av Star Wars</value>
+  </data>
 </root>

@@ -8,14 +8,21 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System;
+using System.CodeDom.Compiler;
+using System.Configuration;
+using System.Diagnostics;
+using System.Drawing;
+using System.Runtime.CompilerServices;
+
 namespace Ferienedteller3null.Properties {
     
     
-    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+    [CompilerGenerated()]
+    [GeneratedCode("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    internal sealed partial class Settings : ApplicationSettingsBase {
         
-        private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
+        private static Settings defaultInstance = ((Settings)(Synchronized(new Settings())));
         
         public static Settings Default {
             get {
@@ -23,21 +30,21 @@ namespace Ferienedteller3null.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2015-12-23")]
-        public global::System.DateTime SelectedVacationData {
+        [UserScopedSetting()]
+        [DebuggerNonUserCode()]
+        [DefaultSettingValue("2015-12-23")]
+        public DateTime SelectedVacationData {
             get {
-                return ((global::System.DateTime)(this["SelectedVacationData"]));
+                return ((DateTime)(this["SelectedVacationData"]));
             }
             set {
                 this["SelectedVacationData"] = value;
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Hei, Julenisse!")]
+        [UserScopedSetting()]
+        [DebuggerNonUserCode()]
+        [DefaultSettingValue("Hei, Julenisse!")]
         public string UserName {
             get {
                 return ((string)(this["UserName"]));
@@ -47,21 +54,21 @@ namespace Ferienedteller3null.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Red")]
-        public global::System.Drawing.Color FontColor {
+        [UserScopedSetting()]
+        [DebuggerNonUserCode()]
+        [DefaultSettingValue("Red")]
+        public Color FontColor {
             get {
-                return ((global::System.Drawing.Color)(this["FontColor"]));
+                return ((Color)(this["FontColor"]));
             }
             set {
                 this["FontColor"] = value;
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Standard")]
+        [UserScopedSetting()]
+        [DebuggerNonUserCode()]
+        [DefaultSettingValue("Standard")]
         public string SelectedTheme {
             get {
                 return ((string)(this["SelectedTheme"]));
@@ -71,9 +78,9 @@ namespace Ferienedteller3null.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [UserScopedSetting()]
+        [DebuggerNonUserCode()]
+        [DefaultSettingValue("False")]
         public bool UseShortStrings {
             get {
                 return ((bool)(this["UseShortStrings"]));
@@ -83,15 +90,73 @@ namespace Ferienedteller3null.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [UserScopedSetting()]
+        [DebuggerNonUserCode()]
+        [DefaultSettingValue("False")]
         public bool AllwaysOnTop {
             get {
                 return ((bool)(this["AllwaysOnTop"]));
             }
             set {
                 this["AllwaysOnTop"] = value;
+            }
+        }
+        
+        [UserScopedSetting()]
+        [DebuggerNonUserCode()]
+        [DefaultSettingValue("False")]
+        public bool StarWarsCountDown {
+            get {
+                return ((bool)(this["StarWarsCountDown"]));
+            }
+            set {
+                this["StarWarsCountDown"] = value;
+            }
+        }
+        
+        [UserScopedSetting()]
+        [DebuggerNonUserCode()]
+        [DefaultSettingValue("2015-12-16")]
+        public DateTime StarWarsMyDate {
+            get {
+                return ((DateTime)(this["StarWarsMyDate"]));
+            }
+            set {
+                this["StarWarsMyDate"] = value;
+            }
+        }
+        
+        [UserScopedSetting()]
+        [DebuggerNonUserCode()]
+        [DefaultSettingValue("2015-12-16")]
+        public DateTime StarWarsPremierDate {
+            get {
+                return ((DateTime)(this["StarWarsPremierDate"]));
+            }
+            set {
+                this["StarWarsPremierDate"] = value;
+            }
+        }
+        
+        [UserScopedSetting()]
+        [DebuggerNonUserCode()]
+        public DateTime StarWarsMyHour {
+            get {
+                return ((DateTime)(this["StarWarsMyHour"]));
+            }
+            set {
+                this["StarWarsMyHour"] = value;
+            }
+        }
+        
+        [UserScopedSetting()]
+        [DebuggerNonUserCode()]
+        public DateTime selectedVacationHour {
+            get {
+                return ((DateTime)(this["selectedVacationHour"]));
+            }
+            set {
+                this["selectedVacationHour"] = value;
             }
         }
     }

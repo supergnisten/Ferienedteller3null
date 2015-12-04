@@ -20,5 +20,20 @@
     <Setting Name="AllwaysOnTop" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="StarWarsCountDown" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="StarWarsMyDate" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">2015-12-16</Value>
+    </Setting>
+    <Setting Name="StarWarsPremierDate" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">2015-12-16</Value>
+    </Setting>
+    <Setting Name="StarWarsMyHour" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="selectedVacationHour" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
