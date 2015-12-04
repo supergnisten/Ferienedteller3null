@@ -1,0 +1,28 @@
+﻿<Window x:Class="Ferienedteller3null.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Ferienedteller3null" 
+        mc:Ignorable="d"
+        Title="Ferienedteller" DataContext="{StaticResource MainViewModel}" Height="350" Width="525"  Icon="Images/SnowyChristmas.jpg" WindowStartupLocation="CenterScreen">
+    <Window.Background>
+        <ImageBrush ImageSource="Images/SnowyChristmas.jpg"/>
+    </Window.Background>
+
+    <DockPanel>
+      
+        <Label Content="Juleferie om" FontSize="45" Foreground="Red"  DockPanel.Dock="Top" HorizontalAlignment="Center"/>
+        <Label Content="{Binding RestTimeToVacationString}" FontSize="75" Foreground="Red" DockPanel.Dock="Top" HorizontalAlignment="Center"/>
+        <Label Content="Julen ringes inn om" FontSize="45" Foreground="Red" DockPanel.Dock="Top" HorizontalAlignment="Center"/>
+        <Label Content="{Binding RestTimeToChristmasString}" FontSize="75" Foreground="Red" DockPanel.Dock="Top" HorizontalAlignment="Center"/>
+        <Label Content="God Jul" FontSize="45" HorizontalAlignment="Center" DockPanel.Dock="Top" Foreground="Red"/>
+        <Label Content="{Binding UserName}" Foreground="Red" FontSize="45" DockPanel.Dock="Top" HorizontalAlignment="Center"/>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="35" VerticalAlignment="Bottom">
+            <Label Content="Feriedato" Foreground="Red"/>
+            <DatePicker SelectedDate="{Binding SelectedDate}"/>
+            <ComboBox ItemsSource="{Binding ThemeSources}" SelectedItem="{Binding SelectedImageSources}" DisplayMemberPath="Name" Width="125" Margin="5"/>
+        
+        </StackPanel>
+    </DockPanel>
+</Window>

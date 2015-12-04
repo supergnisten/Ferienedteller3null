@@ -1,0 +1,9 @@
+﻿<Application x:Class="Ferienedteller3null.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Ferienedteller3null"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <local:MainWindowViewModel x:Key="MainViewModel"/>
+    </Application.Resources>
+</Application>
