@@ -70,5 +70,29 @@ namespace Ferienedteller3null.Properties {
                 this["SelectedTheme"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseShortStrings {
+            get {
+                return ((bool)(this["UseShortStrings"]));
+            }
+            set {
+                this["UseShortStrings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AllwaysOnTop {
+            get {
+                return ((bool)(this["AllwaysOnTop"]));
+            }
+            set {
+                this["AllwaysOnTop"] = value;
+            }
+        }
     }
 }

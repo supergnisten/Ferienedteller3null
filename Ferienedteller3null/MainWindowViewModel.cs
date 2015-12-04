@@ -23,29 +23,39 @@ namespace Ferienedteller3null
     public class MainWindowViewModel : ViewModelBase
     {
         readonly DateTime _chirstmasRings = new DateTime(2015,12,24,16,0,0);
-
+        private DispatcherTimer _timer; 
         public MainWindowViewModel()
         {
             SelectedDate = Settings.Default.SelectedVacationData;
-           
             UserName = Settings.Default.UserName;
             var newUsername = string.Empty;
             if (UserName.Equals("Hei, Julenisse!"))
                 newUsername = UserPrincipal.Current.DisplayName;
             if (!string.IsNullOrEmpty(newUsername))
                 UserName = newUsername;
-            
+
+            UseShortTextTimeString = Settings.Default.UseShortStrings;
+            SelectedVacationHour = Settings.Default.SelectedVacationData;
+
             StartTimer();
             PropertyChanged += OnPropertyChanged;
+            ClosingRequest += OnClosingRequest;
+        }
+
+        private void OnClosingRequest(object sender, EventArgs eventArgs)
+        {
+        _timer?.Stop();
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            if (!propertyChangedEventArgs.PropertyName.Equals(nameof(SelectedDate))) return;
-            if (SelectedDate.Hour != 16)
+            if (propertyChangedEventArgs.PropertyName.Equals(nameof(SelectedVacationHour)))
             {
-                SelectedDate = new DateTime(SelectedDate.Year,SelectedDate.Month,SelectedDate.Day,16,0,0);
+                SelectedDate = new DateTime(SelectedDate.Year,SelectedDate.Month,SelectedDate.Day,
+                    SelectedVacationHour.Hour,SelectedVacationHour.Minute,SelectedVacationHour.Second);
             }
+
+            Settings.Default.Save();
         }
 
         private string _userName;
@@ -89,7 +99,7 @@ namespace Ferienedteller3null
             set
             {
                 _selectedDate = value;
-               Settings.Default.SelectedVacationData = value;
+                Settings.Default.SelectedVacationData = value;
                 Settings.Default.Save();
                 OnPropertyChanged(nameof(SelectedDate));
             }
@@ -121,18 +131,51 @@ namespace Ferienedteller3null
         }
 
 
-        private void StartTimer()
+        private bool _useShortTextTimeString;
+
+        public bool UseShortTextTimeString
         {
+            get { return _useShortTextTimeString; }
+            set
+            {
+                _useShortTextTimeString = value;
+                Settings.Default.UseShortStrings = value;
+                OnPropertyChanged(nameof(UseShortTextTimeString));
+            }
+        }
+ 
+        private DateTime _selectedHours;
 
-            
-            var timer = new DispatcherTimer {Interval = new TimeSpan(0, 0, 0, 1)};
-            timer.Tick += TimerOnTick;
-            timer.Start();
-
-
-
+        public DateTime SelectedVacationHour
+        {
+            get { return _selectedHours; }
+            set
+            {
+                _selectedHours = value;
+                OnPropertyChanged(nameof(SelectedVacationHour));
+            }
         }
 
+        private bool _alwaysOnTop;
+
+        public bool AlwaysOnTop
+        {
+            get { return _alwaysOnTop; }
+            set
+            {
+                _alwaysOnTop = value;
+                Settings.Default.AllwaysOnTop = value;
+                OnPropertyChanged(nameof(AlwaysOnTop));
+            }
+        }
+ 
+
+        private void StartTimer()
+        {
+            _timer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 1) };
+            _timer.Tick += TimerOnTick;
+            _timer.Start();
+        }
         private void TimerOnTick(object sender, EventArgs eventArgs)
         {
             
@@ -145,8 +188,10 @@ namespace Ferienedteller3null
             var timestring = (hours == 1) ? "time" : "timer";
             var minstring = (min == 1) ? "minutt" : "minutter";
             var sekstring = (sec == 1) ? "sekund" : "sekunder";
+            var longString = $"{days} {dagStreng} {hours} {timestring} {min} {minstring} {sec} {sekstring}";
+            var shortstring = $"{days} D {hours} H {min} m {sec} s";
 
-            RestTimeToVacationString = $"{days} {dagStreng} {hours} {timestring} {min} {minstring} {sec} {sekstring}";
+            RestTimeToVacationString = UseShortTextTimeString ? shortstring : longString;
 
             var deltaChristmas = _chirstmasRings - DateTime.Now;
             var ddays = deltaChristmas.Days;
@@ -157,7 +202,10 @@ namespace Ferienedteller3null
             var dtimestring = (dhours == 1) ? "time" : "timer";
             var dminstring = (dmin == 1) ? "minutt" : "minutter";
             var dsekstring = (dsec == 1) ? "sekund" : "sekunder";
-            RestTimeToChristmasString = $"{ddays} {ddagStreng} {dhours} {dtimestring} {dmin} {dminstring} {dsec} {dsekstring}";
+            var dLongString = $"{ddays} {ddagStreng} {dhours} {dtimestring} {dmin} {dminstring} {dsec} {dsekstring}";
+            var dshortstring = $"{ddays} D {dhours} H {dmin} m {dsec} s";
+
+            RestTimeToChristmasString = UseShortTextTimeString ? dshortstring : dLongString;
 
 
         }
