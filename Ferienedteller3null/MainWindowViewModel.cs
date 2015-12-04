@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -13,6 +14,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Ferienedteller3null.Properties;
+
 using Color = System.Drawing.Color;
 
 namespace Ferienedteller3null
@@ -20,13 +22,19 @@ namespace Ferienedteller3null
 
     public class MainWindowViewModel : ViewModelBase
     {
-        DateTime chirstmasRings = new DateTime(2015,12,24,16,0,0);
-        private bool _saved = false;
+        readonly DateTime _chirstmasRings = new DateTime(2015,12,24,16,0,0);
+
         public MainWindowViewModel()
         {
             SelectedDate = Settings.Default.SelectedVacationData;
            
             UserName = Settings.Default.UserName;
+            var newUsername = string.Empty;
+            if (UserName.Equals("Hei, Julenisse!"))
+                newUsername = UserPrincipal.Current.DisplayName;
+            if (!string.IsNullOrEmpty(newUsername))
+                UserName = newUsername;
+            
             StartTimer();
             PropertyChanged += OnPropertyChanged;
         }
@@ -140,7 +148,7 @@ namespace Ferienedteller3null
 
             RestTimeToVacationString = $"{days} {dagStreng} {hours} {timestring} {min} {minstring} {sec} {sekstring}";
 
-            var deltaChristmas = chirstmasRings - DateTime.Now;
+            var deltaChristmas = _chirstmasRings - DateTime.Now;
             var ddays = deltaChristmas.Days;
             var dhours = deltaChristmas.Hours;
             var dmin = deltaChristmas.Minutes;
