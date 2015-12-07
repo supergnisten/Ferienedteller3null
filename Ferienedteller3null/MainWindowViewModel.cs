@@ -10,10 +10,12 @@ namespace Ferienedteller3null
 
     public class MainWindowViewModel : ViewModelBase
     {
-        readonly DateTime _chirstmasRings = new DateTime(2015, 12, 24, 16, 0, 0);
+        private DateTime _dateAndHourToCountDownTo = new DateTime(2015, 12, 24, 16, 0, 0);
         private DispatcherTimer _timer;
         public MainWindowViewModel()
         {
+            Settings.Default.ChristmasRingsDate = _dateAndHourToCountDownTo;
+            Settings.Default.Save();
 
             ThemeSources = new ObservableCollection<string> { "Standard", "Lofoten", "StarWars - DarkSide", "StarWars - Christmas" };
             SelectedImageSource = Settings.Default.SelectedTheme;
@@ -45,7 +47,9 @@ namespace Ferienedteller3null
             FirstString = SelectedImageSource.Contains("StarWars") ? Resources.StarWars_MyDate : Resources.Christmas_Vacation;
             SecondString = SelectedImageSource.Contains("StarWars") ? Resources.StarWars_Premiere : Resources.Chrismas_ChristmasRingin;
             LastString = SelectedImageSource.Contains("StarWars") ? Resources.StarWars_mayTheForceBeWithYou : Resources.Christmas_MerryChristmas;
-
+           _dateAndHourToCountDownTo = SelectedImageSource.Contains("StarWars")
+               ? Settings.Default.StarWarsPremierDate
+               : Settings.Default.ChristmasRingsDate;
             SelectedDate = SelectedImageSource.Contains("StarWars") ? Settings.Default.StarWarsMyDate : Settings.Default.SelectedVacationData;
             SelectedVacationHour = SelectedImageSource.Contains("StarWars") ? Settings.Default.StarWarsMyHour : Settings.Default.SelectedVacationData;
 
@@ -266,7 +270,7 @@ namespace Ferienedteller3null
 
             RestTimeToVacationString = UseShortTextTimeString ? shortstring : longString;
 
-            var deltaChristmas = _chirstmasRings - DateTime.Now;
+            var deltaChristmas = _dateAndHourToCountDownTo - DateTime.Now;
             var ddays = deltaChristmas.Days;
             var dhours = deltaChristmas.Hours;
             var dmin = deltaChristmas.Minutes;

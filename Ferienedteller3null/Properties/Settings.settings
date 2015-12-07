@@ -35,5 +35,8 @@
     <Setting Name="selectedVacationHour" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="ChristmasRingsDate" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">2015-12-24</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
