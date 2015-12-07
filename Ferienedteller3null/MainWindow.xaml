@@ -3,10 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ps="clr-namespace:Ferienedteller3null.ParticleSystem"
         mc:Ignorable="d"
         Title="Ferienedteller" DataContext="{StaticResource MainViewModel}"  Height="600" Width="1000"  
         Icon="Images/nedtelling_ikon.ico" WindowStartupLocation="CenterScreen" 
-        SizeToContent="WidthAndHeight" Topmost="{Binding AlwaysOnTop}">
+        Topmost="{Binding AlwaysOnTop}" >
     <Window.Resources>
         <Style TargetType="DockPanel">
             <Setter Property="Background">
@@ -58,16 +59,22 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    <DockPanel>
-        <Label Content="{Binding FirstString}" FontSize="25" DockPanel.Dock="Top" />
-        <Label Content="{Binding RestTimeToVacationString}" FontSize="45" DockPanel.Dock="Top" />
-        <Label Content="{Binding SecondString}" FontSize="25"  DockPanel.Dock="Top" />
-        <Label Content="{Binding RestTimeToChristmasString}" FontSize="45"  DockPanel.Dock="Top" />
-        <Label Content="{Binding LastString}" FontSize="25" DockPanel.Dock="Top" />
-        <Label Content="{Binding UserName}"  FontSize="25" DockPanel.Dock="Top"/>
+    <Grid>
+        <DockPanel>
+            <Label Content="{Binding FirstString}" FontSize="25" DockPanel.Dock="Top" />
+            <Label Content="{Binding RestTimeToVacationString}" FontSize="45" DockPanel.Dock="Top" />
+            <Label Content="{Binding SecondString}" FontSize="25"  DockPanel.Dock="Top" />
+            <Label Content="{Binding RestTimeToChristmasString}" FontSize="45"  DockPanel.Dock="Top" />
+            <Label Content="{Binding LastString}" FontSize="25" DockPanel.Dock="Top" />
+            <Label Content="{Binding UserName}"  FontSize="25" DockPanel.Dock="Top"/>
+        </DockPanel>
+        <ps:ParticleViewport Background="Transparent" >
+            <!--<ps:ParticleViewport.BitmapEffect>
+                <BlurBitmapEffect Radius="2"/>
+            </ps:ParticleViewport.BitmapEffect>-->
+        </ps:ParticleViewport>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="35" 
-                    VerticalAlignment="Bottom" Background="{x:Null}"
-                     >
+                    VerticalAlignment="Bottom" Background="{x:Null}">
             <Label Content="Feriedato"  VerticalAlignment="Center"/>
             <DatePicker SelectedDate="{Binding SelectedDate}" SelectedDateFormat="Short" FirstDayOfWeek="Monday" VerticalAlignment="Center"/>
             <TextBox Width="50" Margin="2" Text="{Binding SelectedVacationHour, StringFormat=HH:mm}" VerticalAlignment="Center"/>
@@ -75,5 +82,5 @@
             <CheckBox IsChecked="{Binding UseShortTextTimeString}" Content="Bruk kort tekst på tiden" VerticalAlignment="Center"/>
             <CheckBox IsChecked="{Binding AlwaysOnTop}" Content="Vis alltid på topp" VerticalAlignment="Center" Margin="5,0,10,0"/>
         </StackPanel>
-    </DockPanel>
+    </Grid>
 </Window>
