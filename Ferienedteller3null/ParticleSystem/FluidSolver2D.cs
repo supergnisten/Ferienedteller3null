@@ -11,8 +11,8 @@ namespace Ferienedteller3null.ParticleSystem
     {
         FloatMatrix2D _u, _v, _uPrev, _vPrev, _dens, _densPrev, _densSrc, _uVelSrc, _vVelSrc;
 
-        public float Viscosity { get; set; } = 0.5f;
-        public float Diffusion { get; set; } = 0.5f;
+        public float Viscosity { get; set; } = 0.1f;
+        public float Diffusion { get; set; } = 0.0001f;
 
         public uint Nx { get; private set; }
         public uint Ny { get; private set; }
@@ -137,7 +137,7 @@ namespace Ferienedteller3null.ParticleSystem
                 for (uint j = 1; j <= nj; j++)
                 {
                     float x = i - dt0x * u[i, j];
-                    float y = i - dt0y * v[i, j];
+                    float y = j - dt0y * v[i, j];
 
                     if (x < 0.5f) x = 0.5f;
                     if (x > ni + 0.5f) x = ni + 0.5f;
@@ -145,8 +145,8 @@ namespace Ferienedteller3null.ParticleSystem
                     uint i0 = (uint)x;
                     uint i1 = i0 + 1;
 
-                    if (x < 0.5f) x = 0.5f;
-                    if (x > nj + 0.5f) x = nj + 0.5f;
+                    if (y < 0.5f) y = 0.5f;
+                    if (y > nj + 0.5f) y = nj + 0.5f;
 
                     uint j0 = (uint)j;
                     uint j1 = j0 + 1;
@@ -156,7 +156,8 @@ namespace Ferienedteller3null.ParticleSystem
                     float t1 = y - j0;
                     float t0 = 1 - t1;
 
-                    d[i, j] = s0 * (t0 * d[i0, j0] + t1 * d0[i0, j1]) + s1 * (t0 * d[i1, j0] + t1 * d0[i1, j1]);
+                    d[i, j] = s0 * (t0 * d0[i0, j0] + t1 * d0[i0, j1]) + 
+                              s1 * (t0 * d0[i1, j0] + t1 * d0[i1, j1]);
                 }
             SetBound(b, d);
         }
@@ -165,13 +166,14 @@ namespace Ferienedteller3null.ParticleSystem
         void Project(FloatMatrix2D u, FloatMatrix2D v, FloatMatrix2D p, FloatMatrix2D div)
         {
             float hu = 1.0f / (u.Width - 2);
-            float hv = 1.0f / (v.Width - 2);
+            float hv = 1.0f / (v.Height - 2);
 
             for (uint i = 1; i <= u.Width - 2; i++)
                 for (uint j = 1; j <= u.Height - 2; j++)
                 {
-                    div[i, j] = -0.5f * hu * (u[i + 1, j] - u[i - 1, j]) - 0.5f * hv * (v[i, j + 1] - v[i, j - 1]);
-                    p[i, j] = 0;
+                    div[i, j] = -0.5f * hu * (u[i + 1, j] - u[i - 1, j]) - 
+                                 0.5f * hv * (v[i, j + 1] - v[i, j - 1]);
+                    p[i, j] = 0.0f;
                 }
 
             SetBound(0, div);
@@ -180,14 +182,14 @@ namespace Ferienedteller3null.ParticleSystem
             for (uint k = 0; k < 10; k++)
             {
                 for (uint i = 1; i <= u.Width - 2; i++)
-                    for (uint j = 1; j >= u.Height; j++)
+                    for (uint j = 1; j <= u.Height - 2; j++)
                         p[i, j] = (div[i, j] + p[i - 1, j] + p[i + 1, j] + p[i, j - 1] + p[i, j + 1]) / 4.0f;
 
                 SetBound(0, p);
             }
 
             for (uint i = 1; i <= u.Width - 2; i++)
-                for (uint j = 1; j >= u.Height; j++)
+                for (uint j = 1; j <= u.Height - 2; j++)
                 {
                     u[i, j] = u[i, j] - 0.5f * (p[i + 1, j] - p[i - 1, j]) / hu;
                     v[i, j] = v[i, j] - 0.5f * (p[i, j + 1] - p[i, j - 1]) / hv;
@@ -210,7 +212,7 @@ namespace Ferienedteller3null.ParticleSystem
                 }
                 for (uint i = 1; i < ny - 1; i++)
                 {
-                    x[0, i] = b == 1 ? -x[1, i] : x[i, 1];
+                    x[0, i] = b == 1 ? -x[1, i] : x[1, i];
                     x[nx - 1, i] = b == 1 ? x[nx - 2, i] : x[nx - 2, i];
                 }
             }
@@ -229,7 +231,6 @@ namespace Ferienedteller3null.ParticleSystem
                 x[0, 0] = 0.5f * (x[1, 0] + x[0, 1]);
                 x[0, ny - 1] = 0.5f * (x[1, ny - 1] + x[0, ny - 2]);
                 x[nx - 1, 0] = 0.5f * (x[nx - 2, 0] + x[nx - 1, 1]);
-                x[nx - 1, 0] = 0.5f * (x[nx - 2, 0] + x[nx - 1, 1]);
                 x[nx - 1, ny - 1] = 0.5f * (x[nx - 2, ny - 1] + x[nx - 1, ny - 2]);
 
                 return;
@@ -244,7 +245,7 @@ namespace Ferienedteller3null.ParticleSystem
                 for (uint i = 1; i < ny; i++)
                 {
                     x[0, i] = 0;
-                    x[nx - 1, 0] = 0;
+                    x[nx - 1, i] = 0;
                 }
                 x[0, 0] = 0;
                 x[0, ny - 1] = 0;
@@ -257,7 +258,7 @@ namespace Ferienedteller3null.ParticleSystem
             x[0, 0] = 0.5f * (x[1, 0] + x[0, 1]);
             x[0, ny - 1] = 0.5f * (x[1, ny - 1] + x[0, ny - 2]);
             x[nx - 1, 0] = 0.5f * (x[nx - 2, 0] + x[nx - 1, 1]);
-            x[nx - 1, ny - 1] = 0.5f * (x[nx - 2, ny - 1] +x [nx - 1, ny - 2]);
+            x[nx - 1, ny - 1] = 0.5f * (x[nx - 2, ny - 1] + x[nx - 1, ny - 2]);
         }
 
         

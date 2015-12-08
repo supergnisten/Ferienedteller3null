@@ -60,15 +60,15 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <DockPanel>
+        <!--<DockPanel>
             <Label Content="{Binding FirstString}" FontSize="25" DockPanel.Dock="Top" />
             <Label Content="{Binding RestTimeToVacationString}" FontSize="45" DockPanel.Dock="Top" />
             <Label Content="{Binding SecondString}" FontSize="25"  DockPanel.Dock="Top" />
             <Label Content="{Binding RestTimeToChristmasString}" FontSize="45"  DockPanel.Dock="Top" />
             <Label Content="{Binding LastString}" FontSize="25" DockPanel.Dock="Top" />
             <Label Content="{Binding UserName}"  FontSize="25" DockPanel.Dock="Top"/>
-        </DockPanel>
-        <ps:ParticleViewport Background="Transparent" >
+        </DockPanel>-->
+        <ps:ParticleViewport Background="Black" >
             <!--<ps:ParticleViewport.BitmapEffect>
                 <BlurBitmapEffect Radius="2"/>
             </ps:ParticleViewport.BitmapEffect>-->

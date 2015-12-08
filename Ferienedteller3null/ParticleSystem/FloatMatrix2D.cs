@@ -15,7 +15,13 @@ namespace Ferienedteller3null.ParticleSystem
         public float this[uint i, uint j]
         {
             get { return Values[j * Width + i]; }
-            set { Values[j * Width + i] = value; }
+            set
+            {
+                if (float.IsNaN(value))
+                {
+                }
+                Values[j * Width + i] = value;
+            }
         }
 
         public FloatMatrix2D(uint i, uint j)

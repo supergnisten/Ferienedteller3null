@@ -22,7 +22,7 @@ namespace Ferienedteller3null.ParticleSystem
     /// </summary>
     public partial class ParticleViewport : UserControl
     {
-        readonly ParticleSystemManager _particleSystemManager;
+        ParticleSystemManager _particleSystemManager;
         readonly Random _random;
 
         int _currentTick;
@@ -37,7 +37,7 @@ namespace Ferienedteller3null.ParticleSystem
         double _dt = 1.0 / 60.0;
 
         readonly List<Line> _velocityLines;
-        readonly FluidForce _fluidForce;
+        FluidForce _fluidForce;
 
         public bool DrawVelocity { get; set; } = true;
 
@@ -45,17 +45,17 @@ namespace Ferienedteller3null.ParticleSystem
         {
             InitializeComponent();
 
-            _particleSystemManager = new ParticleSystemManager(_bounds);
             _random = new Random(GetHashCode());
             _velocityLines = new List<Line>();
 
-            var forces = _particleSystemManager.Forces;
-            _fluidForce = forces["Fluid"] as FluidForce;
             _lastTick = Environment.TickCount;
 
             Loaded += (s, e) =>
             {
                 _bounds = new Rect3D(-64, -36, 0, 128, 74, 0);
+                _particleSystemManager = new ParticleSystemManager(_bounds);
+                var forces = _particleSystemManager.Forces;
+                _fluidForce = forces["Fluid"] as FluidForce;
 
                 var frameTimer = new DispatcherTimer();
                 frameTimer.Tick += OnFrame;
@@ -66,7 +66,7 @@ namespace Ferienedteller3null.ParticleSystem
 
 
                 WorldModels.Children.Add(
-                    _particleSystemManager.CreateParticleSystem(10000, Colors.White, "Snø", _bounds, forces["Gravity"]));
+                    _particleSystemManager.CreateParticleSystem(10000, Colors.White, "Snø", _bounds, forces["Gravity"], forces["Fluid"]));
 
                 var xStep = ParticleContainer.ActualWidth / (_fluidForce.Nx - 2);
                 var yStep = ParticleContainer.ActualHeight / (_fluidForce.Ny - 2);
@@ -82,9 +82,9 @@ namespace Ferienedteller3null.ParticleSystem
                         var line = new Line()
                         {
                             X1 = x,
-                            X2 = x + _random.NextDouble() * 5,
+                            X2 = x,// + _random.NextDouble() * 5,
                             Y1 = y,
-                            Y2 = y + _random.NextDouble() * 5,
+                            Y2 = y,// + _random.NextDouble() * 5,
                             Stroke = velocityBrush,
                             StrokeThickness = 1
                         };
@@ -108,12 +108,12 @@ namespace Ferienedteller3null.ParticleSystem
             if (Mouse.LeftButton == MouseButtonState.Pressed)
             {
                 var pos = Mouse.GetPosition(this);
-                var i = (uint)(ActualWidth / _fluidForce.Nx - 2);
-                var j = (uint)(ActualHeight / _fluidForce.Ny - 2);
-                var force = 0.0010;
+                var i = (uint)((pos.X / ActualWidth) * (_fluidForce.Nx - 2));
+                var j = (uint)((pos.Y / ActualHeight) * (_fluidForce.Ny - 2));
+                var force = 10000000;
                 var dirX = -1.0 + _random.NextDouble() * 2;
                 var dirY = -1.0 + _random.NextDouble() * 2;
-                var vel = new Vector();// (dirX, dirY) * force;
+                var vel = new Vector(dirX, dirY) * force;
                 _fluidForce.AddVelocity(i, j, vel);
                 Console.WriteLine(pos + ": " + vel);
             }
@@ -142,7 +142,9 @@ namespace Ferienedteller3null.ParticleSystem
                         uint index = j * _fluidForce.Nx + i;
                         var line = _velocityLines.ElementAt((int)index);
                         var velocity = _fluidForce.Velocity(i, j);
+                        //if (velocity.X > 0.01)
                         line.X2 = line.X1 + velocity.X;
+                        //if (velocity.Y > 0.01)
                         line.Y2 = line.Y1 + velocity.Y;
                     }
 

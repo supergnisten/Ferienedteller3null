@@ -47,6 +47,7 @@ namespace Ferienedteller3null.ParticleSystem
                 foreach (var force in Forces)
                     force.AppendForce(particle, elapsed);
 
+                particle.Velocity += particle.Acceleration * elapsed;
                 particle.Position += particle.Velocity * elapsed;
                 particle.Acceleration = new Vector3D();
             }
