@@ -48,6 +48,7 @@ namespace Ferienedteller3null.ParticleSystem
                     force.AppendForce(particle, elapsed);
 
                 particle.Position += particle.Velocity * elapsed;
+                particle.Acceleration = new Vector3D();
             }
 
             UpdateGeometry();

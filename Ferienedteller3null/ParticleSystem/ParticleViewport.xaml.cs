@@ -24,6 +24,7 @@ namespace Ferienedteller3null.ParticleSystem
     {
         readonly ParticleSystemManager _particleSystemManager;
         readonly Random _random;
+
         int _currentTick;
         double _elapsed;
         int _frameCount;
@@ -32,29 +33,91 @@ namespace Ferienedteller3null.ParticleSystem
         int _lastTick;
         double _totalElapsed;
         Rect3D _bounds;
+
+        double _dt = 1.0 / 60.0;
+
+        readonly List<Line> _velocityLines;
+        readonly FluidForce _fluidForce;
+
+        public bool DrawVelocity { get; set; } = true;
+
         public ParticleViewport()
         {
             InitializeComponent();
 
-            var frameTimer = new DispatcherTimer();
-            frameTimer.Tick += OnFrame;
-            frameTimer.Interval = TimeSpan.FromSeconds(1.0 / 60.0);
-            frameTimer.Start();
-
-            _lastTick = Environment.TickCount;
-
-            _particleSystemManager = new ParticleSystemManager();
+            _particleSystemManager = new ParticleSystemManager(_bounds);
             _random = new Random(GetHashCode());
+            _velocityLines = new List<Line>();
 
             var forces = _particleSystemManager.Forces;
-            _bounds = new Rect3D(-64, -36, 0, 128, 74, 0);
+            _fluidForce = forces["Fluid"] as FluidForce;
+            _lastTick = Environment.TickCount;
 
-            WorldModels.Children.Add(
-                _particleSystemManager.CreateParticleSystem(1000, Colors.White, "Snø", _bounds, forces["Gravity"]));
+            Loaded += (s, e) =>
+            {
+                _bounds = new Rect3D(-64, -36, 0, 128, 74, 0);
+
+                var frameTimer = new DispatcherTimer();
+                frameTimer.Tick += OnFrame;
+                frameTimer.Interval = TimeSpan.FromSeconds(_dt);
+                frameTimer.Start();
+
+
+
+
+                WorldModels.Children.Add(
+                    _particleSystemManager.CreateParticleSystem(10000, Colors.White, "Snø", _bounds, forces["Gravity"]));
+
+                var xStep = ParticleContainer.ActualWidth / (_fluidForce.Nx - 2);
+                var yStep = ParticleContainer.ActualHeight / (_fluidForce.Ny - 2);
+
+                var velocityBrush = new SolidColorBrush(Colors.Red);
+                var lines = new List<Line>();
+                for (uint i = 1; i <= _fluidForce.Nx; i++)
+                    for (uint j = 1; j <= _fluidForce.Ny; j++)
+                    {
+                        var x = _bounds.X + i * xStep;
+                        var y = _bounds.Y + j * yStep;
+
+                        var line = new Line()
+                        {
+                            X1 = x,
+                            X2 = x + _random.NextDouble() * 5,
+                            Y1 = y,
+                            Y2 = y + _random.NextDouble() * 5,
+                            Stroke = velocityBrush,
+                            StrokeThickness = 1
+                        };
+                        VelocityCanvas.Children.Add(line);
+                        lines.Add(line);
+                    }
+
+                _velocityLines.AddRange(lines);
+            };
         }
 
         private void OnFrame(object sender, EventArgs e)
         {
+            if (Keyboard.IsKeyDown(Key.V))
+            {
+                DrawVelocity = !DrawVelocity;
+                VelocityCanvas.Visibility = DrawVelocity ? 
+                    Visibility.Visible : Visibility.Hidden;
+            }
+
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                var pos = Mouse.GetPosition(this);
+                var i = (uint)(ActualWidth / _fluidForce.Nx - 2);
+                var j = (uint)(ActualHeight / _fluidForce.Ny - 2);
+                var force = 0.0010;
+                var dirX = -1.0 + _random.NextDouble() * 2;
+                var dirY = -1.0 + _random.NextDouble() * 2;
+                var vel = new Vector();// (dirX, dirY) * force;
+                _fluidForce.AddVelocity(i, j, vel);
+                Console.WriteLine(pos + ": " + vel);
+            }
+
             _currentTick = Environment.TickCount;
             _elapsed = (_currentTick - _lastTick) / 1000.0;
             _totalElapsed += _elapsed;
@@ -70,15 +133,28 @@ namespace Ferienedteller3null.ParticleSystem
                 FrameRateLabel.Content = "FPS: " + _frameRate + "  Particles: " + _particleSystemManager.ActiveParticleCount;
             }
 
-            _particleSystemManager.Update(_elapsed);
-            AddSnowParticle();
+            _particleSystemManager.Update(_dt);
+
+            if (DrawVelocity)
+                for (uint i = 0; i < _fluidForce.Nx; i++)
+                    for (uint j = 0; j < _fluidForce.Ny; j++)
+                    {
+                        uint index = j * _fluidForce.Nx + i;
+                        var line = _velocityLines.ElementAt((int)index);
+                        var velocity = _fluidForce.Velocity(i, j);
+                        line.X2 = line.X1 + velocity.X;
+                        line.Y2 = line.Y1 + velocity.Y;
+                    }
+
+            for (int i = 0; i < 10; i++)
+                AddSnowParticle();
         }
 
         private void AddSnowParticle()
         {
             var startPos = _bounds.X + _random.NextDouble() * _bounds.SizeX;
             var size = _random.NextDouble();
-            var maxSpeed = size * 5;
+            var maxSpeed = size * 100;
             _particleSystemManager.SpawnParticle(
                 "Snø", 
                 new Point3D(startPos, 36, 0), 

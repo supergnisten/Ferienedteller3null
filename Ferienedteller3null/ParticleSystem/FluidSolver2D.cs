@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Ferienedteller3null.ParticleSystem
 {
@@ -13,8 +14,13 @@ namespace Ferienedteller3null.ParticleSystem
         public float Viscosity { get; set; } = 0.5f;
         public float Diffusion { get; set; } = 0.5f;
 
+        public uint Nx { get; private set; }
+        public uint Ny { get; private set; }
+
         public FluidSolver2D(uint i, uint j)
         {
+            Nx = i;
+            Ny = j;
             _u = new FloatMatrix2D(i, j);
             _v = new FloatMatrix2D(i, j);
             _uPrev = new FloatMatrix2D(i, j);
@@ -24,6 +30,17 @@ namespace Ferienedteller3null.ParticleSystem
             _densSrc = new FloatMatrix2D(i, j);
             _uVelSrc = new FloatMatrix2D(i, j);
             _vVelSrc = new FloatMatrix2D(i, j);
+        }
+
+        public Vector Velocity(uint i, uint j)
+        {
+            return new Vector(_u[i, j], _v[i, j]);
+        }
+
+        public void AddVelocity(uint i, uint j, Vector vel)
+        {
+            _u[i, j] += (float)vel.X;
+            _v[i, j] += (float)vel.Y;
         }
 
         public void Update(float dt)

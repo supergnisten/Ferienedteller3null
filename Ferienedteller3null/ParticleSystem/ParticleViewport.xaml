@@ -7,7 +7,7 @@
              xmlns:data="System.Windows.Data"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid Name="ParticleContainer">
         <Viewport3D Name="ParticleView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Viewport3D.Camera>
                 <OrthographicCamera Position="0,0,32" LookDirection="0,0,-32" UpDirection="0,1,0" Width="128"/>
@@ -26,5 +26,6 @@
         <DockPanel Background="#01000000">
             <Label Visibility="Visible" Name="FrameRateLabel" DockPanel.Dock="Top" Foreground="Yellow" Content="FPS: 0" />
         </DockPanel>
+        <Canvas Name="VelocityCanvas" />
     </Grid>
 </UserControl>

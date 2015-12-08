@@ -15,12 +15,15 @@ namespace Ferienedteller3null.ParticleSystem
         readonly Dictionary<string, Force> _forces;
         public int ActiveParticleCount => _particleSystems.Values.Sum(i => i.Count);
         public IReadOnlyDictionary<string, Force> Forces => new ReadOnlyDictionary<string, Force>(_forces);
-        public ParticleSystemManager()
+        public Rect3D WorldBounds { get; private set; }
+        public ParticleSystemManager(Rect3D worldBounds)
         {
+            WorldBounds = worldBounds;
             _particleSystems = new Dictionary<string, ParticleSystem>();
             _forces = new Dictionary<string, Force>();
 
-            _forces.Add("Gravity", new GravityForce() { Gravity = new Vector3D(0, -9.81, 0) } );
+            _forces.Add("Gravity", new GravityForce() { Gravity = new Vector3D(0, -98.1, 0) } );
+            _forces.Add("Fluid", new FluidForce(64, 32, worldBounds));
         }
 
         public void Update(double elapsed)
