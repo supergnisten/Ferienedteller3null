@@ -26,6 +26,6 @@
         <DockPanel Background="#01000000">
             <Label Visibility="Visible" Name="FrameRateLabel" DockPanel.Dock="Top" Foreground="Yellow" Content="FPS: 0" />
         </DockPanel>
-        <Canvas Name="VelocityCanvas" />
+        <Canvas Name="VelocityCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 </UserControl>

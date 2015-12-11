@@ -40,8 +40,21 @@ namespace Ferienedteller3null.ParticleSystem
                 var particle = _particleList[i];
                 if (!Bounds.Contains(particle.Position))
                 {
-                    _particleList.RemoveAt(i);
-                    continue;
+                    //_particleList.RemoveAt(i);
+                    //continue;
+                    if (particle.Position.X < Bounds.X)
+                        particle.Position =
+                            new Point3D(Bounds.X + Bounds.SizeX, particle.Position.Y, particle.Position.Z);
+                    else if (particle.Position.X > Bounds.X + Bounds.SizeX)
+                        particle.Position =
+                            new Point3D(Bounds.X, particle.Position.Y, particle.Position.Z);
+
+                    if (particle.Position.Y < Bounds.Y)
+                    {
+                        particle.Position =
+                            new Point3D(particle.Position.X, Bounds.Y + Bounds.SizeY, particle.Position.Z);
+                        particle.Velocity = new Vector3D();
+                    }
                 }
 
                 foreach (var force in Forces)

@@ -37,7 +37,11 @@ namespace Ferienedteller3null.ParticleSystem
         double _dt = 1.0 / 60.0;
 
         readonly List<Line> _velocityLines;
+        readonly List<Ellipse> _ellipses;
         FluidForce _fluidForce;
+
+        readonly SolidColorBrush _velocityBrush = new SolidColorBrush(Colors.Red);
+        readonly SolidColorBrush _ellipseBrush = new SolidColorBrush(Colors.Yellow);
 
         public bool DrawVelocity { get; set; } = true;
 
@@ -47,7 +51,7 @@ namespace Ferienedteller3null.ParticleSystem
 
             _random = new Random(GetHashCode());
             _velocityLines = new List<Line>();
-
+            _ellipses = new List<Ellipse>();
             _lastTick = Environment.TickCount;
 
             Loaded += (s, e) =>
@@ -62,62 +66,95 @@ namespace Ferienedteller3null.ParticleSystem
                 frameTimer.Interval = TimeSpan.FromSeconds(_dt);
                 frameTimer.Start();
 
-
-
-
                 WorldModels.Children.Add(
                     _particleSystemManager.CreateParticleSystem(10000, Colors.White, "Snø", _bounds, forces["Gravity"], forces["Fluid"]));
 
-                var xStep = ParticleContainer.ActualWidth / (_fluidForce.Nx - 2);
-                var yStep = ParticleContainer.ActualHeight / (_fluidForce.Ny - 2);
+                var xStep = ParticleContainer.ActualWidth / _fluidForce.Nx;
+                var yStep = ParticleContainer.ActualHeight / _fluidForce.Ny;
 
-                var velocityBrush = new SolidColorBrush(Colors.Red);
+                
+
                 var lines = new List<Line>();
+                var ellipses = new List<Ellipse>();
                 for (uint i = 1; i <= _fluidForce.Nx; i++)
                     for (uint j = 1; j <= _fluidForce.Ny; j++)
                     {
-                        var x = _bounds.X + i * xStep;
-                        var y = _bounds.Y + j * yStep;
+                        var x = (i - 0.5) * xStep;
+                        var y = (j - 0.5) * yStep;
 
                         var line = new Line()
                         {
                             X1 = x,
-                            X2 = x,// + _random.NextDouble() * 5,
+                            X2 = x,
                             Y1 = y,
-                            Y2 = y,// + _random.NextDouble() * 5,
-                            Stroke = velocityBrush,
+                            Y2 = y,
+                            Stroke = _velocityBrush,
                             StrokeThickness = 1
                         };
-                        VelocityCanvas.Children.Add(line);
-                        lines.Add(line);
-                    }
+                        var size = 2;
+                        var ellipse = new Ellipse()
+                        {
+                            Height = size,
+                            Width = size,
+                            Fill = _ellipseBrush
+                        };
+                        Canvas.SetLeft(ellipse, x - size * 0.5);
+                        Canvas.SetTop(ellipse, y - size * 0.5);
 
+                        VelocityCanvas.Children.Add(line);
+                        VelocityCanvas.Children.Add(ellipse);
+                        lines.Add(line);
+                        ellipses.Add(ellipse);
+                    }
+                
                 _velocityLines.AddRange(lines);
+                _ellipses.AddRange(ellipses);
             };
         }
 
+        Point _lastMousePosition;
         private void OnFrame(object sender, EventArgs e)
         {
-            if (Keyboard.IsKeyDown(Key.V))
+            var mousePosition = Mouse.GetPosition(VelocityCanvas);
+            if (mousePosition.X >= 0 && mousePosition.Y >= 0)
             {
-                DrawVelocity = !DrawVelocity;
-                VelocityCanvas.Visibility = DrawVelocity ? 
-                    Visibility.Visible : Visibility.Hidden;
-            }
+                if (Keyboard.IsKeyDown(Key.V))
+                {
+                    DrawVelocity = !DrawVelocity;
+                    VelocityCanvas.Visibility = DrawVelocity ?
+                        Visibility.Visible : Visibility.Hidden;
+                }
 
-            if (Mouse.LeftButton == MouseButtonState.Pressed)
-            {
-                var pos = Mouse.GetPosition(this);
-                var i = (uint)((pos.X / ActualWidth) * (_fluidForce.Nx - 2));
-                var j = (uint)((pos.Y / ActualHeight) * (_fluidForce.Ny - 2));
-                var force = 10000000;
-                var dirX = -1.0 + _random.NextDouble() * 2;
-                var dirY = -1.0 + _random.NextDouble() * 2;
-                var vel = new Vector(dirX, dirY) * force;
-                _fluidForce.AddVelocity(i, j, vel);
-                Console.WriteLine(pos + ": " + vel);
-            }
+                var mi = (uint)((mousePosition.X / ActualWidth) * (_fluidForce.Nx - 1));
+                var mj = (uint)((mousePosition.Y / ActualHeight) * (_fluidForce.Ny - 1));
 
+
+                for (uint i = 0; i < _fluidForce.Nx; i++)
+                    for (uint j = 0; j < _fluidForce.Ny; j++)
+                        _ellipses[(int)(j * _fluidForce.Nx + i)].Fill = _ellipseBrush;
+
+                _ellipses[(int)(mj * _fluidForce.Nx + mi)].Fill = _velocityBrush;
+
+                if (Mouse.LeftButton == MouseButtonState.Pressed)
+                {
+
+
+                    var force = 10000;
+                    var dir = mousePosition - _lastMousePosition;
+                    if (dir.LengthSquared > 0)
+                    {
+                        dir.Normalize();
+                        var vel = dir * force;
+                        _fluidForce.AddVelocity(mi, mj, vel);
+                        Console.WriteLine(mousePosition + ": " + vel);
+                    }
+                }
+                if (mousePosition != _lastMousePosition)
+                {
+                    Console.WriteLine(mousePosition);
+                    _lastMousePosition = mousePosition;
+                }
+            }
             _currentTick = Environment.TickCount;
             _elapsed = (_currentTick - _lastTick) / 1000.0;
             _totalElapsed += _elapsed;
@@ -142,9 +179,7 @@ namespace Ferienedteller3null.ParticleSystem
                         uint index = j * _fluidForce.Nx + i;
                         var line = _velocityLines.ElementAt((int)index);
                         var velocity = _fluidForce.Velocity(i, j);
-                        //if (velocity.X > 0.01)
                         line.X2 = line.X1 + velocity.X;
-                        //if (velocity.Y > 0.01)
                         line.Y2 = line.Y1 + velocity.Y;
                     }
 
