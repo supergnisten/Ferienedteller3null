@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Ferienedteller3null.ParticleSystem
 {
@@ -12,7 +7,7 @@ namespace Ferienedteller3null.ParticleSystem
         FloatMatrix2D _u, _v, _uPrev, _vPrev, _dens, _densPrev, _densSrc, _uVelSrc, _vVelSrc;
 
         public float Viscosity { get; set; } = 0.1f;
-        public float Diffusion { get; set; } = 0.0001f;
+        public float Diffusion { get; set; } = 0.01f;
 
         public uint Nx { get; private set; }
         public uint Ny { get; private set; }
@@ -39,8 +34,8 @@ namespace Ferienedteller3null.ParticleSystem
 
         public void AddVelocity(uint i, uint j, Vector vel)
         {
-            _u[i, j] += (float)vel.X;
-            _v[i, j] += (float)vel.Y;
+            _uVelSrc[i, j] += (float)vel.X;
+            _vVelSrc[i, j] += (float)vel.Y;
         }
 
         public void Update(float dt)
@@ -55,6 +50,9 @@ namespace Ferienedteller3null.ParticleSystem
             _densPrev.Add(_densSrc);
             _uPrev.Add(_uVelSrc);
             _vPrev.Add(_vVelSrc);
+
+            _uVelSrc.Fill(0);
+            _vVelSrc.Fill(0);
         }
 
         public void DensityStep(FloatMatrix2D x, FloatMatrix2D x0, FloatMatrix2D u, FloatMatrix2D v, float diff, float dt)

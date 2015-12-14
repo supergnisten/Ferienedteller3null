@@ -59,7 +59,7 @@ namespace Ferienedteller3null.ParticleSystem
                 _bounds = new Rect3D(-64, -36, 0, 128, 74, 0);
                 _particleSystemManager = new ParticleSystemManager(_bounds);
                 var forces = _particleSystemManager.Forces;
-                _fluidForce = forces["Fluid"] as FluidForce;
+                //_fluidForce = forces["Fluid"] as FluidForce;
 
                 var frameTimer = new DispatcherTimer();
                 frameTimer.Tick += OnFrame;
@@ -67,92 +67,100 @@ namespace Ferienedteller3null.ParticleSystem
                 frameTimer.Start();
 
                 WorldModels.Children.Add(
-                    _particleSystemManager.CreateParticleSystem(10000, Colors.White, "Snø", _bounds, forces["Gravity"], forces["Fluid"]));
+                    _particleSystemManager.CreateParticleSystem(10000, Colors.White, "Snø", _bounds, forces["Gravity"]));//, forces["Fluid"]));
 
-                var xStep = ParticleContainer.ActualWidth / _fluidForce.Nx;
-                var yStep = ParticleContainer.ActualHeight / _fluidForce.Ny;
+                if (_fluidForce != null)
+                {
+                    var xStep = ParticleContainer.ActualWidth / _fluidForce.Nx;
+                    var yStep = ParticleContainer.ActualHeight / _fluidForce.Ny;
 
-                
-
-                var lines = new List<Line>();
-                var ellipses = new List<Ellipse>();
-                for (uint i = 1; i <= _fluidForce.Nx; i++)
-                    for (uint j = 1; j <= _fluidForce.Ny; j++)
-                    {
-                        var x = (i - 0.5) * xStep;
-                        var y = (j - 0.5) * yStep;
-
-                        var line = new Line()
+                    int max = (int)(_fluidForce.Nx * _fluidForce.Nx);
+                    var lines = new Line[max];
+                    var ellipses = new Ellipse[max];
+                    for (uint i = 0; i < _fluidForce.Nx; i++)
+                        for (uint j = 0; j < _fluidForce.Ny; j++)
                         {
-                            X1 = x,
-                            X2 = x,
-                            Y1 = y,
-                            Y2 = y,
-                            Stroke = _velocityBrush,
-                            StrokeThickness = 1
-                        };
-                        var size = 2;
-                        var ellipse = new Ellipse()
-                        {
-                            Height = size,
-                            Width = size,
-                            Fill = _ellipseBrush
-                        };
-                        Canvas.SetLeft(ellipse, x - size * 0.5);
-                        Canvas.SetTop(ellipse, y - size * 0.5);
+                            var x = i * xStep;
+                            var y = j * yStep;
 
-                        VelocityCanvas.Children.Add(line);
-                        VelocityCanvas.Children.Add(ellipse);
-                        lines.Add(line);
-                        ellipses.Add(ellipse);
-                    }
-                
-                _velocityLines.AddRange(lines);
-                _ellipses.AddRange(ellipses);
+                            var line = new Line()
+                            {
+                                X1 = x,
+                                X2 = x,
+                                Y1 = y,
+                                Y2 = y,
+                                Stroke = _velocityBrush,
+                                StrokeThickness = 1
+                            };
+                            var size = 2;
+                            var hSize = size * 0.5;
+                            var ellipse = new Ellipse()
+                            {
+                                Height = size,
+                                Width = size,
+                                Fill = _ellipseBrush
+                            };
+                            Canvas.SetLeft(ellipse, x - hSize);
+                            Canvas.SetTop(ellipse, y - hSize);
+
+                            VelocityCanvas.Children.Add(line);
+                            VelocityCanvas.Children.Add(ellipse);
+                            var index = (int)(j * _fluidForce.Nx + i);
+                            lines[index] = line;
+                            ellipses[index] = ellipse;
+                        }
+
+                    _velocityLines.AddRange(lines);
+                    _ellipses.AddRange(ellipses);
+                }
             };
         }
 
         Point _lastMousePosition;
         private void OnFrame(object sender, EventArgs e)
         {
-            var mousePosition = Mouse.GetPosition(VelocityCanvas);
-            if (mousePosition.X >= 0 && mousePosition.Y >= 0)
+            if (_fluidForce != null)
             {
-                if (Keyboard.IsKeyDown(Key.V))
+                var mousePosition = Mouse.GetPosition(VelocityCanvas);
+                if (mousePosition.X >= 0 && mousePosition.Y >= 0)
                 {
-                    DrawVelocity = !DrawVelocity;
-                    VelocityCanvas.Visibility = DrawVelocity ?
-                        Visibility.Visible : Visibility.Hidden;
-                }
-
-                var mi = (uint)((mousePosition.X / ActualWidth) * (_fluidForce.Nx - 1));
-                var mj = (uint)((mousePosition.Y / ActualHeight) * (_fluidForce.Ny - 1));
-
-
-                for (uint i = 0; i < _fluidForce.Nx; i++)
-                    for (uint j = 0; j < _fluidForce.Ny; j++)
-                        _ellipses[(int)(j * _fluidForce.Nx + i)].Fill = _ellipseBrush;
-
-                _ellipses[(int)(mj * _fluidForce.Nx + mi)].Fill = _velocityBrush;
-
-                if (Mouse.LeftButton == MouseButtonState.Pressed)
-                {
-
-
-                    var force = 10000;
-                    var dir = mousePosition - _lastMousePosition;
-                    if (dir.LengthSquared > 0)
+                    if (Keyboard.IsKeyDown(Key.V))
                     {
-                        dir.Normalize();
-                        var vel = dir * force;
-                        _fluidForce.AddVelocity(mi, mj, vel);
-                        Console.WriteLine(mousePosition + ": " + vel);
+                        DrawVelocity = !DrawVelocity;
+                        VelocityCanvas.Visibility = DrawVelocity ?
+                            Visibility.Visible : Visibility.Hidden;
                     }
-                }
-                if (mousePosition != _lastMousePosition)
-                {
-                    Console.WriteLine(mousePosition);
-                    _lastMousePosition = mousePosition;
+
+                    var mi = (uint)((mousePosition.X / ActualWidth) * _fluidForce.Nx);
+                    var mj = (uint)((mousePosition.Y / ActualHeight) * _fluidForce.Ny);
+                    //FrameRateLabel.Content = mi + ", " + mj + "\n" + mousePosition.X + "," + mousePosition.Y;
+
+
+                    for (uint i = 0; i < _fluidForce.Nx; i++)
+                        for (uint j = 0; j < _fluidForce.Ny; j++)
+                            _ellipses[(int)(j * _fluidForce.Nx + i)].Fill = _ellipseBrush;
+
+                    _ellipses[(int)(mj * _fluidForce.Nx + mi)].Fill = _velocityBrush;
+
+                    if (Mouse.LeftButton == MouseButtonState.Pressed)
+                    {
+
+
+                        var force = 100000;
+                        var dir = mousePosition - _lastMousePosition;
+                        if (dir.LengthSquared > 0)
+                        {
+                            dir.Normalize();
+                            var vel = dir * force;
+                            _fluidForce.AddVelocity(mi, mj, vel);
+                            Console.WriteLine(mousePosition + ": " + vel);
+                        }
+                    }
+                    if (mousePosition != _lastMousePosition)
+                    {
+                        Console.WriteLine(mousePosition);
+                        _lastMousePosition = mousePosition;
+                    }
                 }
             }
             _currentTick = Environment.TickCount;
@@ -170,19 +178,19 @@ namespace Ferienedteller3null.ParticleSystem
                 FrameRateLabel.Content = "FPS: " + _frameRate + "  Particles: " + _particleSystemManager.ActiveParticleCount;
             }
 
-            _particleSystemManager.Update(_dt);
 
-            if (DrawVelocity)
+            if (DrawVelocity && _fluidForce != null)
                 for (uint i = 0; i < _fluidForce.Nx; i++)
                     for (uint j = 0; j < _fluidForce.Ny; j++)
                     {
                         uint index = j * _fluidForce.Nx + i;
-                        var line = _velocityLines.ElementAt((int)index);
+                        var line = _velocityLines[(int)index];
                         var velocity = _fluidForce.Velocity(i, j);
                         line.X2 = line.X1 + velocity.X;
                         line.Y2 = line.Y1 + velocity.Y;
                     }
 
+            _particleSystemManager.Update(_dt);
             for (int i = 0; i < 10; i++)
                 AddSnowParticle();
         }
@@ -190,12 +198,13 @@ namespace Ferienedteller3null.ParticleSystem
         private void AddSnowParticle()
         {
             var startPos = _bounds.X + _random.NextDouble() * _bounds.SizeX;
-            var size = _random.NextDouble();
-            var maxSpeed = size * 100;
+            var size = _random.NextDouble() + 0.1;
+            var maxSpeed = size * 10;
             _particleSystemManager.SpawnParticle(
                 "Snø", 
-                new Point3D(startPos, 36, 0), 
-                new Vector3D(), 
+                new Point3D(startPos, 36, 0),
+                //new Vector3D(), 
+                new Vector3D(0, -maxSpeed, 0),
                 new Vector3D(maxSpeed, maxSpeed, maxSpeed), 
                 _random.NextDouble(), 
                 _random.NextDouble());

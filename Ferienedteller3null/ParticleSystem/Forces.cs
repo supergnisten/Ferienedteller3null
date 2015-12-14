@@ -53,14 +53,15 @@ namespace Ferienedteller3null.ParticleSystem
 
         public override void AppendForce(Particle particle, double elapsed)
         {
-            var i = (uint)((_solver.Nx - 1) * (particle.Position.X - _worldBounds.X) / _worldBounds.SizeX);
-            var j = (uint)((_solver.Ny - 1) * (particle.Position.Y - _worldBounds.Y) / _worldBounds.SizeY);
+            var i = (uint)(_solver.Nx * (particle.Position.X - _worldBounds.X) / _worldBounds.SizeX);
+            var j = (uint)(_solver.Ny * (particle.Position.Y - _worldBounds.Y) / _worldBounds.SizeY);
             var vel = _solver.Velocity(Math.Min(_solver.Nx - 1, i), Math.Min(_solver.Ny - 1, j));
             particle.Velocity += new Vector3D(vel.X, vel.Y, 0);
         }
 
         public override void Update(double elapsed)
         {
+            return;
             _solver.Update((float)elapsed);
         }
 

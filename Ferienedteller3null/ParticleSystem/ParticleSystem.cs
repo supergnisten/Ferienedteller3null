@@ -53,7 +53,7 @@ namespace Ferienedteller3null.ParticleSystem
                     {
                         particle.Position =
                             new Point3D(particle.Position.X, Bounds.Y + Bounds.SizeY, particle.Position.Z);
-                        particle.Velocity = new Vector3D();
+                        //particle.Velocity = new Vector3D(0, -particle.MaxVelocity.Y, 0);//new Vector3D();
                     }
                 }
 
@@ -124,8 +124,8 @@ namespace Ferienedteller3null.ParticleSystem
                 Position = position,
                 Life = life,
                 Size = size,
-                Velocity = velocity,
-                MaxVelocity = maxVelocity
+                MaxVelocity = maxVelocity,
+                Velocity = velocity
             };
 
             _particleList.Add(particle);

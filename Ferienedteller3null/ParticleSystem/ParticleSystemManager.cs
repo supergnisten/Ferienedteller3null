@@ -23,7 +23,7 @@ namespace Ferienedteller3null.ParticleSystem
             _forces = new Dictionary<string, Force>();
 
             _forces.Add("Gravity", new GravityForce() { Gravity = new Vector3D(0, -98.1, 0) } );
-            _forces.Add("Fluid", new FluidForce(32, 16, worldBounds));
+            //_forces.Add("Fluid", new FluidForce(32, 16, worldBounds));
         }
 
         public void Update(double elapsed)
